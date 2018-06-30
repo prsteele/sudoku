@@ -16,11 +16,11 @@ newtype Cell = Cell (Int, Int)
 type Group = [Cell]
 
 -- | A description of a puzzle layout.
-data Puzzle a
+data Puzzle
   = Puzzle
     { puzzleCells :: [Cell]
     , puzzleGroups :: [Group]
-    , puzzleAlphabet :: [a]
+    , puzzleAlphabetSize :: Int
     , puzzleCellGroups :: Cell -> [Group]
     }
 
@@ -28,7 +28,7 @@ data Puzzle a
 --
 -- This can be used to define the 'puzzleCellGroups' field for a
 -- generic puzzle.
-defaultCellGroups :: Cell -> Puzzle a -> [[Cell]]
+defaultCellGroups :: Cell -> Puzzle -> [[Cell]]
 defaultCellGroups cell (Puzzle _ groups _ _)
   = filter inGroup groups
   where
@@ -40,18 +40,18 @@ newtype Contents a = Contents (M.Map Cell a)
     ( Show
     )
 
-groupEntries :: Puzzle a -> Contents a -> [[a]]
+groupEntries :: Puzzle -> Contents a -> [[a]]
 groupEntries (Puzzle _ groups _ _) (Contents contents)
   = groupEntries' <$> groups
   where
     groupEntries' cells = catMaybes [contents M.!? cell | cell <- cells]
 
-mkStandardPuzzle :: Puzzle Int
+mkStandardPuzzle :: Puzzle
 mkStandardPuzzle
   = Puzzle
   { puzzleCells = curry Cell <$> alphabet <*> alphabet
   , puzzleGroups = rows ++ columns ++ blocks
-  , puzzleAlphabet = [0..8]
+  , puzzleAlphabetSize = 9
   , puzzleCellGroups = cellGroups
   }
   where

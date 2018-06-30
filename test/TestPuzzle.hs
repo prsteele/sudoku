@@ -17,7 +17,7 @@ test_standardPuzzle = testGroup "9x9"
   where
     standard = mkStandardPuzzle
 
-groupsInPuzzle :: (Show a, Ord a) => Puzzle a -> Assertion
+groupsInPuzzle :: Puzzle -> Assertion
 groupsInPuzzle (Puzzle cells groups _ _)
   = forM_ groups assertGroupInPuzzle
   where
@@ -28,7 +28,7 @@ groupsInPuzzle (Puzzle cells groups _ _)
         missing = S.difference (S.fromList group) cellSet
         message = printf "Group elements %s not in puzzle" (show missing)
 
-groupsAndCellGroupsAgree :: (Show a, Ord a) => Puzzle a -> Assertion
+groupsAndCellGroupsAgree :: Puzzle -> Assertion
 groupsAndCellGroupsAgree (Puzzle cells groups _ cellGroups)
   = groupSet @=? cellGroupsSet
   where
