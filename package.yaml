@@ -1,0 +1,53 @@
+name:                Sudoku
+version:             0.1.0.0
+github:              "prsteele/Sudoku"
+license:             BSD3
+author:              "Patrick Steele"
+maintainer:          "steele.pat@gmail.com"
+copyright:           "2018 Patrick Steele"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/prsteele/Sudoku#readme>
+
+dependencies:
+  - base >= 4.7 && < 5
+  - containers >= 0.5.10.2 && < 0.6
+
+library:
+  source-dirs: src
+
+executables:
+  Sudoku-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Sudoku
+
+tests:
+  Sudoku-test:
+    main:                Driver.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - Sudoku
+      - tasty >= 1.0.1.1 && < 1.1
+      - tasty-discover >= 4.2.0 && < 4.3
+      - tasty-hunit >= 0.10.0.1 && < 0.11
+      - tasty-quickcheck >= 0.9.2 && < 0.10
