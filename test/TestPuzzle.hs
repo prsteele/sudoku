@@ -3,15 +3,19 @@ module TestPuzzle where
 import Control.Monad
 import Control.Lens
 import qualified Data.Set as S
-import Text.Printf
-
 import Test.Tasty
 import Test.Tasty.HUnit
+import Text.Printf
 
 import Sudoku.Puzzle
 
-test_standardPuzzle :: TestTree
-test_standardPuzzle = testGroup "9x9"
+test_all :: TestTree
+test_all = testGroup "Puzzle manipulation"
+  [ standardPuzzle
+  ]
+
+standardPuzzle :: TestTree
+standardPuzzle = testGroup "9x9"
   [ testCase "Groups in cells" (groupsInPuzzle standard)
   , testCase "Cell groups and groups agree" (groupsAndCellGroupsAgree standard)
   ]
