@@ -3,6 +3,8 @@ module Sudoku.Puzzle where
 
 import Control.Lens
 import Control.Lens.TH
+import qualified Data.Map.Strict as M
+import Data.Maybe (catMaybes)
 
 -- | A coordinate of a puzzle
 newtype Cell = Cell (Int, Int)
@@ -32,8 +34,8 @@ puzzleAlphabet puzzle = [1..puzzle ^. puzzleAlphabetSize]
 --
 -- This can be used to define the 'puzzleCellGroups' field for a
 -- generic puzzle.
-defaultCellGroups :: Cell -> Puzzle -> [[Cell]]
-defaultCellGroups cell (Puzzle _ groups _ _)
+defaultCellGroups :: Puzzle -> Cell -> [[Cell]]
+defaultCellGroups (Puzzle _ groups _ _) cell
   = filter inGroup groups
   where
     inGroup group = cell `elem` group
@@ -85,3 +87,21 @@ mkStandardPuzzle
           where
             row' = (row `div` 3) * 3
             column' = (column `div` 3) * 3
+
+-- | The contents of a Cell
+type Value = Int
+
+-- | The contents of a puzzle.
+newtype Contents = Contents (M.Map Cell Value)
+  deriving
+    ( Show
+    )
+
+readCell :: Contents -> Cell -> Maybe Value
+readCell (Contents contents) cell
+  = M.lookup cell contents
+
+-- | Get the non-missing entries of a group.
+readGroup :: Contents -> Group -> [Value]
+readGroup contents group
+  = catMaybes (readCell contents <$> group)
