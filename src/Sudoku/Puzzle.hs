@@ -3,11 +3,13 @@ module Sudoku.Puzzle where
 
 import Control.Lens
 import Control.Lens.TH
+import Data.List.Ordered (nubSort)
 import qualified Data.Map.Strict as M
 import Data.Maybe (catMaybes)
+import Text.Printf
 
 -- | A coordinate of a puzzle
-newtype Cell = Cell (Int, Int)
+newtype Cell = Cell { unCell :: (Int, Int) }
   deriving
     ( Show
     , Eq
@@ -87,6 +89,28 @@ mkStandardPuzzle
           where
             row' = (row `div` 3) * 3
             column' = (column `div` 3) * 3
+
+formatContents :: Puzzle -> Contents -> String
+formatContents puzzle contents
+  = unlines
+  [ concat
+    [ formatValue (readCell contents (Cell (row, column)))
+    | column <- columns]
+  | row <- rows
+  ]
+  where
+    cellRow :: Cell -> Int
+    cellRow = fst . unCell
+
+    cellColumn :: Cell -> Int
+    cellColumn = snd . unCell
+
+    rows = nubSort (cellRow <$> puzzle ^. puzzleCells)
+    columns = nubSort (cellColumn <$> puzzle ^. puzzleCells)
+
+    formatValue :: Maybe Value -> String
+    formatValue Nothing  = " . "
+    formatValue (Just x) = printf " %i " x
 
 -- | The contents of a Cell
 type Value = Int
