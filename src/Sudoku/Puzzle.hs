@@ -42,54 +42,6 @@ defaultCellGroups (Puzzle _ groups _ _) cell
   where
     inGroup group = cell `elem` group
 
-mkStandardPuzzle :: Puzzle
-mkStandardPuzzle
-  = Puzzle
-  { _puzzleCells = curry Cell <$> alphabet <*> alphabet
-  , _puzzleGroups = rows ++ columns ++ blocks
-  , _puzzleAlphabetSize = 9
-  , _puzzleCellGroups = cellGroups
-  }
-  where
-    alphabet = [0..8]
-    blockStarts = filter ((== 0) . (`div` 3)) alphabet
-
-    rows =
-      [ [ Cell (row, column)
-        | column <- alphabet
-        ]
-      | row <- alphabet
-      ]
-    columns =
-      [ [ Cell (row, column)
-        | row <- alphabet
-        ]
-      | column <- alphabet
-      ]
-    blocks =
-      [ [ Cell (row + i, column + j)
-        | i <- [0..2]
-        , j <- [0..2]
-        ]
-      | row <- blockStarts
-      , column <- blockStarts
-      ]
-
-    cellGroups :: Cell -> [[Cell]]
-    cellGroups (Cell (row, column))
-      = cellRow : cellColumn : [cellBlock]
-      where
-        cellRow = [Cell (row, column') | column' <- alphabet]
-        cellColumn = [Cell (row', column) | row' <- alphabet]
-        cellBlock =
-          [ Cell (row' + i, column' + j)
-          | i <- [0..2]
-          , j <- [0..2]
-          ]
-          where
-            row' = (row `div` 3) * 3
-            column' = (column `div` 3) * 3
-
 formatContents :: Puzzle -> Contents -> String
 formatContents puzzle contents
   = unlines
