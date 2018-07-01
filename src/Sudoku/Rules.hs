@@ -39,6 +39,7 @@ instance Semigroup Status where
   _            <> (Witness cs)  = Witness cs
   (Witness cs) <> _             = Witness cs
   _            <> Incomplete    = Incomplete
+  Incomplete   <> Complete      = Incomplete
   Complete     <> Complete      = Complete
 
 -- | Compute the status of a group.
