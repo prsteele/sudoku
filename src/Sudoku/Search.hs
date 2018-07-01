@@ -1,6 +1,7 @@
 {-# LANGUAGE TupleSections #-}
 module Sudoku.Search where
 
+import Data.List (sortOn)
 import qualified Data.Map.Strict as M
 
 import Sudoku.Puzzle
@@ -23,7 +24,10 @@ search state candidates check
 
 nextCandidates :: Puzzle -> Contents -> [Contents]
 nextCandidates puzzle contents
-  = emptyCells puzzle contents >>= cellCompletions puzzle contents
+  = concat (sortOn length completions)
+  where
+    cells = emptyCells puzzle contents
+    completions = cellCompletions puzzle contents <$> cells
 
 puzzleEligibility :: Puzzle -> Contents -> Eligibility
 puzzleEligibility puzzle contents = case puzzleStatus puzzle contents of
