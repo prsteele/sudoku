@@ -38,7 +38,7 @@ mkStandardPuzzle
       | column <- alphabet
       ]
     blocks =
-      [ [ Cell (row + i, column + j)
+      [ [ Cell (row * 3 + i, column * 3 + j)
         | i <- [0..2]
         , j <- [0..2]
         ]
