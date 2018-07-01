@@ -64,6 +64,11 @@ formatContents puzzle contents
     formatValue Nothing  = " . "
     formatValue (Just x) = printf " %i " x
 
+formatGroup :: Puzzle -> Group -> String
+formatGroup puzzle group = formatContents puzzle contents
+  where
+    contents = Contents (M.fromList (zip group (puzzleAlphabet puzzle)))
+
 -- | The contents of a Cell
 type Value = Int
 
