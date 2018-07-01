@@ -66,9 +66,15 @@ puzzleStatus puzzle contents = sconcat (Complete :| statuses)
   where
     statuses = groupStatus puzzle contents <$> puzzle ^. puzzleGroups
 
--- | Compute possible completions of a cell value
-cellCompletions :: Puzzle -> Contents -> Cell -> [Value]
-cellCompletions puzzle contents cell
+-- | The empty cells in a puzzle
+emptyCells :: Puzzle -> Contents -> [Cell]
+emptyCells puzzle contents = filter missing (puzzle ^. puzzleCells)
+  where
+    missing = (== Nothing) . readCell contents
+
+-- | Compute possible candidates of a cell value
+cellCandidates :: Puzzle -> Contents -> Cell -> [Value]
+cellCandidates puzzle contents cell
   = minus (puzzleAlphabet puzzle) present
   where
     groups :: [Group]
@@ -76,3 +82,9 @@ cellCompletions puzzle contents cell
 
     present :: [Value]
     present = (nubSort . concat) (readGroup contents <$> groups)
+
+cellCompletions :: Puzzle -> Contents -> Cell -> [Contents]
+cellCompletions puzzle contents cell
+  = fillCell contents cell <$> candidates
+  where
+    candidates = cellCandidates puzzle contents cell

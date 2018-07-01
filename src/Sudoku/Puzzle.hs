@@ -119,11 +119,16 @@ type Value = Int
 newtype Contents = Contents (M.Map Cell Value)
   deriving
     ( Show
+    , Eq
     )
 
 readCell :: Contents -> Cell -> Maybe Value
 readCell (Contents contents) cell
   = M.lookup cell contents
+
+fillCell :: Contents -> Cell -> Value -> Contents
+fillCell (Contents contents) cell value
+  = Contents (M.insert cell value contents)
 
 -- | Get the non-missing entries of a group.
 readGroup :: Contents -> Group -> [Value]
