@@ -1,8 +1,8 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Sudoku.Puzzle where
 
-import qualified Data.Map.Strict as M
-import Data.Maybe (catMaybes)
-import Text.Printf
+import Control.Lens
+import Control.Lens.TH
 
 -- | A coordinate of a puzzle
 newtype Cell = Cell (Int, Int)
@@ -18,11 +18,15 @@ type Group = [Cell]
 -- | A description of a puzzle layout.
 data Puzzle
   = Puzzle
-    { puzzleCells :: [Cell]
-    , puzzleGroups :: [Group]
-    , puzzleAlphabetSize :: Int
-    , puzzleCellGroups :: Cell -> [Group]
+    { _puzzleCells :: [Cell]
+    , _puzzleGroups :: [Group]
+    , _puzzleAlphabetSize :: Int
+    , _puzzleCellGroups :: Cell -> [Group]
     }
+makeLenses ''Puzzle
+
+puzzleAlphabet :: Puzzle -> [Int]
+puzzleAlphabet puzzle = [1..puzzle ^. puzzleAlphabetSize]
 
 -- | A list of all Groups that contain a Cell.
 --
@@ -34,25 +38,13 @@ defaultCellGroups cell (Puzzle _ groups _ _)
   where
     inGroup group = cell `elem` group
 
--- | The contents of a puzzle.
-newtype Contents a = Contents (M.Map Cell a)
-  deriving
-    ( Show
-    )
-
-groupEntries :: Puzzle -> Contents a -> [[a]]
-groupEntries (Puzzle _ groups _ _) (Contents contents)
-  = groupEntries' <$> groups
-  where
-    groupEntries' cells = catMaybes [contents M.!? cell | cell <- cells]
-
 mkStandardPuzzle :: Puzzle
 mkStandardPuzzle
   = Puzzle
-  { puzzleCells = curry Cell <$> alphabet <*> alphabet
-  , puzzleGroups = rows ++ columns ++ blocks
-  , puzzleAlphabetSize = 9
-  , puzzleCellGroups = cellGroups
+  { _puzzleCells = curry Cell <$> alphabet <*> alphabet
+  , _puzzleGroups = rows ++ columns ++ blocks
+  , _puzzleAlphabetSize = 9
+  , _puzzleCellGroups = cellGroups
   }
   where
     alphabet = [0..8]

@@ -1,6 +1,7 @@
 module TestPuzzle where
 
 import Control.Monad
+import Control.Lens
 import qualified Data.Set as S
 import Text.Printf
 
@@ -18,10 +19,10 @@ test_standardPuzzle = testGroup "9x9"
     standard = mkStandardPuzzle
 
 groupsInPuzzle :: Puzzle -> Assertion
-groupsInPuzzle (Puzzle cells groups _ _)
-  = forM_ groups assertGroupInPuzzle
+groupsInPuzzle puzzle
+  = forM_ (puzzle ^. puzzleGroups) assertGroupInPuzzle
   where
-    cellSet = S.fromList cells
+    cellSet = S.fromList (puzzle ^. puzzleCells)
     assertGroupInPuzzle group
       = assertEqual message S.empty missing
       where

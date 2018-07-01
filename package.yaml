@@ -22,6 +22,7 @@ description:         Please see the README on GitHub at <https://github.com/prst
 dependencies:
   - base >= 4.7 && < 5
   - containers >= 0.5.10.2 && < 0.6
+  - lens >= 4.16.1 && < 4.17
 
 library:
   source-dirs: src
