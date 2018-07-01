@@ -8,7 +8,7 @@ import Test.Tasty.HUnit
 import Text.Printf
 
 import Sudoku.Puzzle
-import Sudoku.Puzzle.Standard (mkStandardPuzzle)
+import Sudoku.Puzzle.Standard
 
 test_all :: TestTree
 test_all = testGroup "Puzzle manipulation"

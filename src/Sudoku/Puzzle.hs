@@ -29,6 +29,16 @@ data Puzzle
     }
 makeLenses ''Puzzle
 
+-- | The contents of a Cell
+type Value = Int
+
+-- | The contents of a puzzle.
+newtype Contents = Contents (M.Map Cell Value)
+  deriving
+    ( Show
+    , Eq
+    )
+
 puzzleAlphabet :: Puzzle -> [Int]
 puzzleAlphabet puzzle = [1..puzzle ^. puzzleAlphabetSize]
 
@@ -69,16 +79,6 @@ formatGroup puzzle group = formatContents puzzle contents
   where
     contents = Contents (M.fromList (zip group (puzzleAlphabet puzzle)))
 
--- | The contents of a Cell
-type Value = Int
-
--- | The contents of a puzzle.
-newtype Contents = Contents (M.Map Cell Value)
-  deriving
-    ( Show
-    , Eq
-    )
-
 readCell :: Contents -> Cell -> Maybe Value
 readCell (Contents contents) cell
   = M.lookup cell contents
@@ -91,3 +91,6 @@ fillCell (Contents contents) cell value
 readGroup :: Contents -> Group -> [Value]
 readGroup contents group
   = catMaybes (readCell contents <$> group)
+
+emptyContents :: Contents
+emptyContents = Contents M.empty
