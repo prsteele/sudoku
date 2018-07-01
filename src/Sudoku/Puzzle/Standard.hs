@@ -6,6 +6,7 @@ import Control.Lens
 import Control.Monad
 import Data.List (sort)
 import Data.Maybe (catMaybes)
+import Data.Void
 import qualified Data.Map.Strict as M
 import Text.Megaparsec
 import Text.Megaparsec.Char
@@ -60,22 +61,22 @@ mkStandardPuzzle
             row' = (row `div` 3) * 3
             column' = (column `div` 3) * 3
 
-type Parser = Parsec () String
+type Parser = Parsec Void String
 
-entry :: Parser (Maybe Value)
-entry = Just . read . return <$> (oneOf "123456789" <?> "entry")
+parseEntry :: Parser (Maybe Value)
+parseEntry = Just . read . return <$> (oneOf "123456789" <?> "entry")
 
-missing :: Parser (Maybe Value)
-missing = const Nothing <$> oneOf " .0"
+parseMissing :: Parser (Maybe Value)
+parseMissing = const Nothing <$> oneOf " .0"
 
-cell :: Parser (Maybe Value)
-cell = do
-  value <- entry <|> missing
+parseCell :: Parser (Maybe Value)
+parseCell = do
+  value <- parseEntry <|> parseMissing
   many eol
   return value
 
-contents :: Parser Contents
-contents = build <$> replicateM 81 cell
+parseContents :: Parser Contents
+parseContents = build <$> replicateM 81 parseCell
   where
     cells = sort (mkStandardPuzzle ^. puzzleCells)
     build entries = Contents . M.fromList . catMaybes $ mEntries

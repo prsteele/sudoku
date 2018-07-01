@@ -31,11 +31,11 @@ puzzleEligibility puzzle contents = case puzzleStatus puzzle contents of
   Incomplete -> Candidate
   Witness _  -> Ineligible
 
-solvePuzzle :: Puzzle -> [Contents]
-solvePuzzle puzzle = snd <$> search initialState candidates eligibility
+solvePuzzle :: Puzzle -> Contents -> [Contents]
+solvePuzzle puzzle start = snd <$> search initialState candidates eligibility
   where
     initialState :: (Puzzle, Contents)
-    initialState = (puzzle, Contents (M.empty))
+    initialState = (puzzle, start)
 
     candidates :: (Puzzle, Contents) -> [(Puzzle, Contents)]
     candidates = fmap (puzzle,) . uncurry nextCandidates

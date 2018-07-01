@@ -30,7 +30,7 @@ library:
   source-dirs: src
 
 executables:
-  Sudoku-exe:
+  sudoku:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
