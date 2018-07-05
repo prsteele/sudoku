@@ -37,7 +37,7 @@ makeLenses ''Puzzle
 type Value = Int
 
 -- | The contents of a puzzle.
-newtype Contents = Contents (M.Map Cell Value)
+newtype Contents = Contents { unContents :: (M.Map Cell Value) }
   deriving
     ( Show
     , Eq
