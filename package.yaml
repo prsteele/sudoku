@@ -25,6 +25,7 @@ dependencies:
   - lens >= 4.16.1 && < 4.17
   - data-ordlist >= 0.4.7.0 && < 0.5
   - megaparsec >= 6.4.1 && < 6.5
+  - mtl >= 2.2.2 && < 2.3
 
 library:
   source-dirs: src

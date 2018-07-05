@@ -1,6 +1,8 @@
 {-# LANGUAGE TupleSections #-}
 module Sudoku.Search where
 
+import Control.Monad
+import Control.Monad.Reader
 import Data.List (sortOn)
 import qualified Data.Map.Strict as M
 
@@ -12,37 +14,35 @@ data Eligibility
   | Candidate
   | Ineligible
 
-search :: a -> (a -> [a]) -> (a -> Eligibility) -> [a]
-search state candidates check
-  = case check state of
-      Eligible   -> state : remainder
-      Candidate  -> remainder
-      Ineligible -> []
-  where
-    children = candidates state
-    remainder = concat [search child candidates check | child <- children]
+type Search = Reader Puzzle
 
-nextCandidates :: Puzzle -> Contents -> [Contents]
-nextCandidates puzzle contents
-  = concat (sortOn length completions)
-  where
-    cells = emptyCells puzzle contents
-    completions = cellCompletions puzzle contents <$> cells
+search :: a -> (a -> Search [a]) -> (a -> Search Eligibility) -> Search [a]
+search state candidates check = do
+  eligibility <- check state
+  children <- candidates state
+  remainders <- forM children $ \child -> search child candidates check
+  return $ case eligibility of
+             Eligible   -> state : concat remainders
+             Candidate  -> concat remainders
+             Ineligible -> []
 
-puzzleEligibility :: Puzzle -> Contents -> Eligibility
-puzzleEligibility puzzle contents = case puzzleStatus puzzle contents of
-  Complete   -> Eligible
-  Incomplete -> Candidate
-  Witness _  -> Ineligible
+nextCandidates :: Contents -> Search [Contents]
+nextCandidates contents =
+  let
+    cells puzzle = emptyCells puzzle contents
+    completions puzzle = cellCompletions puzzle contents <$> (cells puzzle)
+  in do
+    puzzle <- ask
+    return $ concat (sortOn length (completions puzzle))
+
+puzzleEligibility :: Contents -> Search Eligibility
+puzzleEligibility contents = do
+  puzzle <- ask
+  case puzzleStatus puzzle contents of
+    Complete   -> return Eligible
+    Incomplete -> return Candidate
+    Witness _  -> return Ineligible
 
 solvePuzzle :: Puzzle -> Contents -> [Contents]
-solvePuzzle puzzle start = snd <$> search initialState candidates eligibility
-  where
-    initialState :: (Puzzle, Contents)
-    initialState = (puzzle, start)
-
-    candidates :: (Puzzle, Contents) -> [(Puzzle, Contents)]
-    candidates = fmap (puzzle,) . uncurry nextCandidates
-
-    eligibility :: (Puzzle, Contents) -> Eligibility
-    eligibility = uncurry puzzleEligibility
+solvePuzzle puzzle start
+  = runReader (search start nextCandidates puzzleEligibility) puzzle
