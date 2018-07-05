@@ -2,6 +2,7 @@ module TestPuzzle where
 
 import Control.Monad
 import Control.Lens
+import Data.List (sort)
 import qualified Data.Set as S
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -28,7 +29,9 @@ groupsInPuzzle puzzle
   = forM_ (puzzle ^. puzzleGroups) assertGroupInPuzzle
   where
     cellSet = S.fromList (puzzle ^. puzzleCells)
-    assertGroupInPuzzle group
+
+    assertGroupInPuzzle :: Group -> Assertion
+    assertGroupInPuzzle (Group group)
       = assertEqual message S.empty missing
       where
         missing = S.difference (S.fromList group) cellSet
@@ -38,7 +41,9 @@ groupsAndCellGroupsAgree :: Puzzle -> Assertion
 groupsAndCellGroupsAgree (Puzzle cells groups _ cellGroups)
   = groupSet @=? cellGroupsSet
   where
-    groupSet = unionAll (S.fromList <$> groups)
-    cellGroupsSet = unionAll (S.fromList <$> (concat (cellGroups <$> cells)))
+    groupSet :: S.Set [Cell]
+    groupSet = S.fromList (sort . unGroup <$> groups)
 
-    unionAll = foldr S.union S.empty
+    cellGroupsSet :: S.Set [Cell]
+    cellGroupsSet
+      = S.fromList . fmap (sort . unGroup) . concat $ fmap cellGroups cells

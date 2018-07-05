@@ -26,10 +26,11 @@ smallPuzzle :: Puzzle
 smallPuzzle
   = Puzzle
   { _puzzleCells = curry Cell <$> [0, 1] <*> [0, 1]
-  , _puzzleGroups = [ [Cell (0, 0), Cell (1, 0)]
-                    , [Cell (0, 1), Cell (1, 1)]
-                    , [Cell (0, 0), Cell (0, 1)]
-                    , [Cell (1, 0), Cell (1, 1)]
+  , _puzzleGroups = fmap (Group . fmap Cell)
+                    [ [(0, 0), (1, 0)]
+                    , [(0, 1), (1, 1)]
+                    , [(0, 0), (0, 1)]
+                    , [(1, 0), (1, 1)]
                     ]
   , _puzzleAlphabetSize = 2
   , _puzzleCellGroups = defaultCellGroups smallPuzzle
@@ -39,7 +40,7 @@ assert2x2RowContradiction :: Assertion
 assert2x2RowContradiction
   = assertEqual "Expected a contradiction" witness status
   where
-    group = [Cell (0, 0), Cell (0, 1)]
+    group = Group [Cell (0, 0), Cell (0, 1)]
     status = puzzleStatus smallPuzzle badContents
     witness = Witness ((Contradiction group 1) :| [])
 
@@ -50,7 +51,7 @@ assert2x2ColumnContradiction :: Assertion
 assert2x2ColumnContradiction
   = assertEqual "Expected a contradiction" witness status
   where
-    group = [Cell (0, 0), Cell (1, 0)]
+    group = Group [Cell (0, 0), Cell (1, 0)]
     status = puzzleStatus smallPuzzle badContents
     witness = Witness ((Contradiction group 1) :| [])
 

@@ -17,7 +17,11 @@ newtype Cell = Cell { unCell :: (Int, Int) }
     )
 
 -- | A list of cells that must have unique contents
-type Group = [Cell]
+newtype Group = Group { unGroup :: [Cell] }
+  deriving
+    ( Show
+    , Eq
+    )
 
 -- | A description of a puzzle layout.
 data Puzzle
@@ -46,9 +50,9 @@ puzzleAlphabet puzzle = [1..puzzle ^. puzzleAlphabetSize]
 --
 -- This can be used to define the 'puzzleCellGroups' field for a
 -- generic puzzle.
-defaultCellGroups :: Puzzle -> Cell -> [[Cell]]
+defaultCellGroups :: Puzzle -> Cell -> [Group]
 defaultCellGroups (Puzzle _ groups _ _) cell
-  = filter inGroup groups
+  = filter (inGroup . unGroup) groups
   where
     inGroup group = cell `elem` group
 
@@ -75,7 +79,7 @@ formatContents puzzle contents
     formatValue (Just x) = printf " %i " x
 
 formatGroup :: Puzzle -> Group -> String
-formatGroup puzzle group = formatContents puzzle contents
+formatGroup puzzle (Group group) = formatContents puzzle contents
   where
     contents = Contents (M.fromList (zip group (puzzleAlphabet puzzle)))
 
@@ -89,7 +93,7 @@ fillCell (Contents contents) cell value
 
 -- | Get the non-missing entries of a group.
 readGroup :: Contents -> Group -> [Value]
-readGroup contents group
+readGroup contents (Group group)
   = catMaybes (readCell contents <$> group)
 
 emptyContents :: Contents

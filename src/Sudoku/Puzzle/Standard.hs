@@ -26,19 +26,22 @@ mkStandardPuzzle
     blockStarts = filter ((== 0) . (`div` 3)) alphabet
 
     rows =
-      [ [ Cell (row, column)
+      [ Group
+        [ Cell (row, column)
         | column <- alphabet
         ]
       | row <- alphabet
       ]
     columns =
-      [ [ Cell (row, column)
+      [ Group
+        [ Cell (row, column)
         | row <- alphabet
         ]
       | column <- alphabet
       ]
     blocks =
-      [ [ Cell (row * 3 + i, column * 3 + j)
+      [ Group
+        [ Cell (row * 3 + i, column * 3 + j)
         | i <- [0..2]
         , j <- [0..2]
         ]
@@ -46,13 +49,14 @@ mkStandardPuzzle
       , column <- blockStarts
       ]
 
-    cellGroups :: Cell -> [[Cell]]
+    cellGroups :: Cell -> [Group]
     cellGroups (Cell (row, column))
       = cellRow : cellColumn : [cellBlock]
       where
-        cellRow = [Cell (row, column') | column' <- alphabet]
-        cellColumn = [Cell (row', column) | row' <- alphabet]
+        cellRow = Group [Cell (row, column') | column' <- alphabet]
+        cellColumn = Group [Cell (row', column) | row' <- alphabet]
         cellBlock =
+          Group
           [ Cell (row' + i, column' + j)
           | i <- [0..2]
           , j <- [0..2]

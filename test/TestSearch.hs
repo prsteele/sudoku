@@ -28,10 +28,11 @@ smallPuzzle :: Puzzle
 smallPuzzle
   = Puzzle
   { _puzzleCells = curry Cell <$> [0, 1] <*> [0, 1]
-  , _puzzleGroups = [ [Cell (0, 0), Cell (1, 0)]
-                    , [Cell (0, 1), Cell (1, 1)]
-                    , [Cell (0, 0), Cell (0, 1)]
-                    , [Cell (1, 0), Cell (1, 1)]
+  , _puzzleGroups = fmap (Group . fmap Cell)
+                    [ [(0, 0), (1, 0)]
+                    , [(0, 1), (1, 1)]
+                    , [(0, 0), (0, 1)]
+                    , [(1, 0), (1, 1)]
                     ]
   , _puzzleAlphabetSize = 2
   , _puzzleCellGroups = defaultCellGroups smallPuzzle
