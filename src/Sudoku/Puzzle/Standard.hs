@@ -68,13 +68,13 @@ mkStandardPuzzle
 
 type Parser = Parsec Void String
 
-parseEntry :: Parser (Maybe Value)
+parseEntry :: Parser (Maybe CellValue)
 parseEntry = Just . read . return <$> (oneOf "123456789" <?> "entry")
 
-parseMissing :: Parser (Maybe Value)
+parseMissing :: Parser (Maybe CellValue)
 parseMissing = const Nothing <$> oneOf " .0"
 
-parseCell :: Parser (Maybe Value)
+parseCell :: Parser (Maybe CellValue)
 parseCell = do
   value <- parseEntry <|> parseMissing
   many eol
@@ -86,5 +86,5 @@ parseContents = build <$> replicateM 81 parseCell
     cells = sort (mkStandardPuzzle ^. puzzleCells)
     build entries = Contents . M.fromList . catMaybes $ mEntries
       where
-        mEntries :: [Maybe (Cell, Value)]
+        mEntries :: [Maybe (Cell, CellValue)]
         mEntries = zipWith (fmap . (,)) cells entries

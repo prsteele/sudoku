@@ -10,25 +10,25 @@ import Text.Printf
 import Sudoku.Puzzle.Puzzle
 
 -- | The contents of a Cell
-type Value = Int
+type CellValue = Int
 
 -- | The contents of a puzzle.
-newtype Contents = Contents { unContents :: (M.Map Cell Value) }
+newtype Contents = Contents { unContents :: (M.Map Cell CellValue) }
   deriving
     ( Show
     , Eq
     )
 
-readCell :: Contents -> Cell -> Maybe Value
+readCell :: Contents -> Cell -> Maybe CellValue
 readCell (Contents contents) cell
   = M.lookup cell contents
 
-fillCell :: Contents -> Cell -> Value -> Contents
+fillCell :: Contents -> Cell -> CellValue -> Contents
 fillCell (Contents contents) cell value
   = Contents (M.insert cell value contents)
 
 -- | Get the non-missing entries of a group.
-readGroup :: Contents -> Group -> [Value]
+readGroup :: Contents -> Group -> [CellValue]
 readGroup contents (Group group)
   = catMaybes (readCell contents <$> group)
 
@@ -53,7 +53,7 @@ formatContents puzzle contents
     rows = nubSort (cellRow <$> puzzle ^. puzzleCells)
     columns = nubSort (cellColumn <$> puzzle ^. puzzleCells)
 
-    formatValue :: Maybe Value -> String
+    formatValue :: Maybe CellValue -> String
     formatValue Nothing  = " . "
     formatValue (Just x) = printf " %i " x
 
