@@ -9,7 +9,7 @@ import Data.Semigroup
 import Sudoku.Puzzle
 
 -- | A witness to an invalid group.
-data Contradiction = Contradiction Group Value
+data Contradiction = Contradiction Group CellValue
   deriving
     ( Show
     , Eq
@@ -73,14 +73,14 @@ emptyCells puzzle contents = filter missing (puzzle ^. puzzleCells)
     missing = (== Nothing) . readCell contents
 
 -- | Compute possible candidates of a cell value
-cellCandidates :: Puzzle -> Contents -> Cell -> [Value]
+cellCandidates :: Puzzle -> Contents -> Cell -> [CellValue]
 cellCandidates puzzle contents cell
   = minus (puzzleAlphabet puzzle) present
   where
     groups :: [Group]
     groups = puzzle ^. puzzleCellGroups $ cell
 
-    present :: [Value]
+    present :: [CellValue]
     present = (nubSort . concat) (readGroup contents <$> groups)
 
 cellCompletions :: Puzzle -> Contents -> Cell -> [Contents]
