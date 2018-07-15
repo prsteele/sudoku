@@ -11,7 +11,8 @@ import qualified Data.Map.Strict as M
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
-import Sudoku.Puzzle
+import Sudoku.Puzzle.Puzzle
+import Sudoku.Puzzle.Contents
 
 mkStandardPuzzle :: Puzzle
 mkStandardPuzzle
