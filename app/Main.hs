@@ -2,9 +2,8 @@ module Main where
 
 import Text.Megaparsec
 
-import Sudoku.Puzzle
+import Sudoku
 import Sudoku.Puzzle.Standard
-import Sudoku.Search
 
 main :: IO ()
 main = do
