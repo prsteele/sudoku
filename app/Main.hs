@@ -1,15 +1,15 @@
 module Main where
 
-import Text.Megaparsec
+import           Text.Megaparsec
 
-import Sudoku
-import Sudoku.Puzzle.Standard
+import           Sudoku
+import           Sudoku.Puzzle.Standard
 
 main :: IO ()
 main = do
   contentsData <- getContents
   case parse parseContents "stdin" contentsData of
-    Left e -> putStrLn (parseErrorPretty e)
+    Left e -> putStrLn (errorBundlePretty e)
     Right contents -> do
       putStrLn "Solving:"
       putStrLn (formatContents mkStandardPuzzle contents)
